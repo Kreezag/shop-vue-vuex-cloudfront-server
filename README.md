@@ -1,2 +1,2 @@
-# shop-vue-vuex-cloudfront-servevr
+# shop-vue-vuex-cloudfront-server
 aws-nodejs server for aws education
