@@ -1,5 +1,5 @@
 import { getProductById } from '../handler';
-import allProducts from '../../../../../../src/api/productList.json';
+import allProducts from '../../../../../api/productList.json';
 
 const headersMock = {
 	'Access-Control-Allow-Headers': 'Content-Type',

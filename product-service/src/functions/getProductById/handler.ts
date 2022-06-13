@@ -3,7 +3,7 @@ import 'source-map-support/register';
 import type { ValidatedEventAPIGatewayProxyEvent } from '@libs/apiGateway';
 import { formatErrorResponse, formatJSONResponse } from '@libs/apiGateway';
 import { middyfy } from '@libs/lambda';
-import allProducts from '../../../../../src/api/productList.json';
+import allProducts from '../../../../api/productList.json';
 import schema from './schema';
 
 export const getProductById: ValidatedEventAPIGatewayProxyEvent<
