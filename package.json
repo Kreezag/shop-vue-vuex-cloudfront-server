@@ -1,0 +1,22 @@
+{
+  "name": "shop-vue-vuex-cloudfront-server",
+  "version": "1.0.0",
+  "description": "Backend services for app",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Kreezag/shop-vue-vuex-cloudfront-server.git"
+  },
+  "author": "kreezag@gmail.com",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Kreezag/shop-vue-vuex-cloudfront-server/issues"
+  },
+  "homepage": "https://github.com/Kreezag/shop-vue-vuex-cloudfront-server#readme",
+  "dependencies": {
+    "@nestjs/cli": "^8.2.8"
+  }
+}
