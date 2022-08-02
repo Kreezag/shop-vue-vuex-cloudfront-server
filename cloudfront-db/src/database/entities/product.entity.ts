@@ -1,5 +1,4 @@
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm'
-import { ApiTags } from "@nestjs/swagger";
 
 @Entity()
 export class Product {
@@ -12,12 +11,6 @@ export class Product {
   @Column({type: "text", nullable: false })
   description: string;
 
-  @Column({type: "number", nullable: false})
+  @Column({type: "int4", nullable: false})
   price: number;
 }
-
-//
-// id: '19ba3d6a-f8ed-491b-a192-0a33b71b38c4'
-// title: 'Product Title',
-//   description: 'This product ...',
-//   price: 200

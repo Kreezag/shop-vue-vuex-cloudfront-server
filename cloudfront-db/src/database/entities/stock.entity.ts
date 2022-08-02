@@ -1,5 +1,4 @@
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm'
-import { ApiTags } from "@nestjs/swagger";
 
 
 @Entity()
@@ -10,6 +9,6 @@ export class Stock {
   @Column({type: "uuid", nullable: false })
   product_id: string;
 
-  @Column({type: "number", nullable: false})
+  @Column({type: "int4", nullable: false})
   count: number;
 }
