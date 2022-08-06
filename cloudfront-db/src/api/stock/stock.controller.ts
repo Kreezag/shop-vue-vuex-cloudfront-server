@@ -21,16 +21,16 @@ export class StockController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.stockService.findOne(+id);
+    return this.stockService.findOne(id);
   }
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateStockDto: UpdateStockDto) {
-    return this.stockService.update(+id, updateStockDto);
+    return this.stockService.update(id, updateStockDto);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.stockService.remove(+id);
+    return this.stockService.remove(id);
   }
 }

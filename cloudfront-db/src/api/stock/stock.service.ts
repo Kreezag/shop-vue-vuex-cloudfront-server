@@ -1,26 +1,62 @@
 import { Injectable } from '@nestjs/common';
 import { CreateStockDto } from './dto/create-stock.dto';
 import { UpdateStockDto } from './dto/update-stock.dto';
+import { InjectRepository } from "@nestjs/typeorm";
+import { Stock } from "../../database/entities/stock.entity";
+import { Repository } from "typeorm";
 
 @Injectable()
 export class StockService {
+  constructor(
+    @InjectRepository(Stock)
+    private readonly stockRepository: Repository<Stock>
+  ) {}
+
   create(createStockDto: CreateStockDto) {
-    return 'This action adds a new stock';
+    return this.stockRepository.insert(createStockDto)
+      .then(r => {
+        console.log(JSON.stringify(r))
+
+        return true
+      })
+      .catch(() => {
+        return false
+      })
   }
 
   findAll() {
-    return `This action returns all stock`;
+    return this.stockRepository.find();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} stock`;
+  findOne(id: string) {
+    return this.stockRepository.findOne({
+      where: {
+        id
+      }
+    });
   }
 
-  update(id: number, updateStockDto: UpdateStockDto) {
-    return `This action updates a #${id} stock`;
+  update(id: string, updateStockDto: UpdateStockDto) {
+    return this.stockRepository.update({ id }, updateStockDto)
+      .then(r => {
+        console.log(JSON.stringify(r))
+
+        return true
+      })
+      .catch(() => {
+        return false
+      })
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} stock`;
+  remove(id: string) {
+    return this.stockRepository.delete({ id })
+      .then(r => {
+        console.log(JSON.stringify(r))
+
+        return true
+      })
+      .catch(() => {
+        return false
+      })
   }
 }
