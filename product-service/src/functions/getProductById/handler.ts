@@ -3,27 +3,30 @@ import 'source-map-support/register';
 import type { ValidatedEventAPIGatewayProxyEvent } from '@libs/apiGateway';
 import { formatErrorResponse, formatJSONResponse } from '@libs/apiGateway';
 import { middyfy } from '@libs/lambda';
-import allProducts from '../../../../api/productList.json';
 import schema from './schema';
+import { createDbConnection } from "@libs/dbConnection";
 
 export const getProductById: ValidatedEventAPIGatewayProxyEvent<
 	typeof schema
-> = async event => {
+> = event => {
+
 	if (!event?.pathParameters?.id) {
 		return formatErrorResponse('Product ID is not defined', 400);
 	}
 
-	const product =
-		allProducts.find(_product => _product.id === event.pathParameters.id) ||
-		null;
+  const connection = createDbConnection()
 
-	if (!product) {
-		return formatErrorResponse('Not Found', 404);
-	}
-
-	return formatJSONResponse({
-		product,
-	});
+  return Promise.all([
+    connection.query('select * from product where id = $1', event.pathParameters.id),
+    connection.query('select * from store where id = $1', event.pathParameters.id),
+  ]).then(([product, stock]) => {
+    return formatJSONResponse({
+      products: {
+        ...product,
+        count: stock.count
+      },
+    });
+  })
 };
 
 export const main = middyfy(getProductById);
