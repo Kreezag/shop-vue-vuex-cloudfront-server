@@ -2,7 +2,7 @@
   {
     "count": 4,
     "description": "Soft cat bed wooden",
-    "id": "fc73c48a80aa",
+    "id": "7829b71c-c1da-44e3-859a-67b8b319e838",
     "price": 25,
     "title": "Cat bed soft",
     "image": "https://rss-school-test-app.s3.eu-west-1.amazonaws.com/assets/Cat+bed+soft.jpeg"
@@ -10,7 +10,7 @@
   {
     "count": 6,
     "description": "Semi-closed cat bed",
-    "id": "fc73c48a80a0",
+    "id": "2ab41974-e842-473c-a613-932556ea3493",
     "price": 20,
     "title": "Cat bed 'Mega claw'",
     "image": "https://rss-school-test-app.s3.eu-west-1.amazonaws.com/assets/Cat+bed+'Mega+claw'.webp"
@@ -18,7 +18,7 @@
   {
     "count": 7,
     "description": "Сozy house with 3 scratching posts",
-    "id": "fc73c48a80a2",
+    "id": "1472c3cf-2412-4fe6-8d14-e9e036d52849",
     "price": 23,
     "title": "Cat house 'soft paw'",
     "image": "https://rss-school-test-app.s3.eu-west-1.amazonaws.com/assets/Cat+house+'soft+paw'.jpeg"
@@ -26,7 +26,7 @@
   {
     "count": 12,
     "description": "cat house with scratching posts in a minimalist design",
-    "id": "fc73c48a80a1",
+    "id": "818fa8c4-557d-45ec-b094-e8312aadca45",
     "price": 35,
     "title": "Cat house '4 paw'",
     "image": "https://rss-school-test-app.s3.eu-west-1.amazonaws.com/assets/Cat+house+'4+paw'.jpeg"
@@ -34,7 +34,7 @@
   {
     "count": 7,
     "description": "Simple house for your kitty",
-    "id": "fc73c48a80a3",
+    "id": "23917ffa-64a4-4327-85b0-a56ec95fc0b9",
     "price": 15,
     "title": "Cat house 'simple'",
     "image": "https://rss-school-test-app.s3.eu-west-1.amazonaws.com/assets/Cat+house+'simple'.webp"
