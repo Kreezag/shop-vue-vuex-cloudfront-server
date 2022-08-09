@@ -9,24 +9,29 @@ import { createDbConnection } from "@libs/dbConnection";
 export const getProductById: ValidatedEventAPIGatewayProxyEvent<
 	typeof schema
 > = event => {
-
 	if (!event?.pathParameters?.id) {
-		return formatErrorResponse('Product ID is not defined', 400);
+    return Promise.resolve()
+      .then(() => {
+        return formatErrorResponse('Not Found', 404)
+      })
 	}
 
-  const connection = createDbConnection()
+	const id: string = event.pathParameters.id;
 
-  return Promise.all([
-    connection.query('select * from product where id = $1', event.pathParameters.id),
-    connection.query('select * from store where id = $1', event.pathParameters.id),
-  ]).then(([product, stock]) => {
-    return formatJSONResponse({
-      products: {
-        ...product,
-        count: stock.count
-      },
-    });
-  })
+  const pool = createDbConnection();
+
+  return pool.query({ text: 'SELECT * FROM product INNER JOIN stocks ON product.id=stocks.product_id where id = $1', values: [id] })
+    .then(({ rows: products }) => {
+      const product = products.map(({ product_id, ...product}) => product)[0];
+
+      if (!product) {
+        return formatErrorResponse('Not Found', 404);
+      }
+
+      return formatJSONResponse({ product })
+    }).catch(() => {
+      return formatErrorResponse('Not Found', 404);
+    })
 };
 
 export const main = middyfy(getProductById);

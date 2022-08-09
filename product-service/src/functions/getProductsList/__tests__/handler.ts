@@ -1,5 +1,5 @@
 import { getProductsList } from '../handler';
-import allProducts from '../../../../../../src/api/productList.json';
+import allProducts from '../../../../src/../../api/productList.json';
 
 const headersMock = {
 	'Access-Control-Allow-Headers': 'Content-Type',
@@ -13,7 +13,7 @@ describe('test for getProductsList', () => {
 
 		expect(data).toBeTruthy();
 		expect(data).toEqual({
-			body: JSON.stringify({ products: allProducts }),
+			body: JSON.stringify({ products: allProducts.map(({ image, ...product }) => product) }),
 			statusCode: 200,
 			headers: headersMock,
 		});

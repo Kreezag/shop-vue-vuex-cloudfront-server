@@ -13,8 +13,8 @@ describe('test for getProductById', () => {
 
 		expect(data).toBeTruthy();
 		expect(data).toEqual({
-			body: JSON.stringify({ message: 'Product ID is not defined' }),
-			statusCode: 400,
+			body: JSON.stringify({ message: 'Not Found' }),
+			statusCode: 404,
 			headers: headersMock,
 		});
 	});
@@ -41,8 +41,8 @@ describe('test for getProductById', () => {
 
 		expect(data).toBeTruthy();
 		expect(data).toEqual({
-			body: JSON.stringify({ message: 'Product ID is not defined' }),
-			statusCode: 400,
+			body: JSON.stringify({ message: 'Not Found' }),
+			statusCode: 404,
 			headers: headersMock,
 		});
 	});
@@ -69,8 +69,8 @@ describe('test for getProductById', () => {
 
 		expect(data).toBeTruthy();
 		expect(data).toEqual({
-			body: JSON.stringify({ message: 'Product ID is not defined' }),
-			statusCode: 400,
+			body: JSON.stringify({ message: 'Not Found' }),
+			statusCode: 404,
 			headers: headersMock,
 		});
 	});
@@ -89,7 +89,7 @@ describe('test for getProductById', () => {
 				requestContext: undefined,
 				resource: '',
 				stageVariables: undefined,
-				pathParameters: { id: 'dandomId' },
+				pathParameters: { id: 'randomId' },
 			},
 			null,
 			null
@@ -104,6 +104,8 @@ describe('test for getProductById', () => {
 	});
 
 	it('pathParameters.id is actual', async () => {
+	  const testId = '23917ffa-64a4-4327-85b0-a56ec95fc0b9';
+
 		const data = await getProductById(
 			{
 				body: undefined,
@@ -117,7 +119,7 @@ describe('test for getProductById', () => {
 				requestContext: undefined,
 				resource: '',
 				stageVariables: undefined,
-				pathParameters: { id: 'fc73c48a80a2' },
+				pathParameters: { id: testId },
 			},
 			null,
 			null
@@ -126,7 +128,7 @@ describe('test for getProductById', () => {
 		expect(data).toBeTruthy();
 		expect(data).toEqual({
 			body: JSON.stringify({
-				product: allProducts.find(_product => _product.id === 'fc73c48a80a2'),
+				product: allProducts.map(({ image, ...product}) => product).find(_product => _product.id === testId),
 			}),
 			statusCode: 200,
 			headers: headersMock,

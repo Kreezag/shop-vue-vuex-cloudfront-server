@@ -1,22 +1,20 @@
-import { RDS } from 'aws-sdk'
-const { Pool } = require('pg')
+import { Pool } from 'pg';
+// import dotenv from 'dotenv'
+// dotenv.config()
 
-const signerOptions = {
-  region: 'eu-west-1',
-  hostname: 'cloudfront-database-instance.cpds6klib029.eu-west-1.rds.amazonaws.com',
-  port: 5432,
-  username: 'postgres'
-};
 
-const signer = new RDS.Signer()
-const getPassword = () => signer.getAuthToken(signerOptions)
+let DATABASE_HOST='cloudfront-database-instance.cpds6klib029.eu-west-1.rds.amazonaws.com',
+DATABASE_PORT=5432,
+USER_NAME='postgres',
+DATABASE_PASSWORD='fK7er7Y0eRTFsVYHyEvP',
+DATABASE_NAME='cloudfront_database';
 
 export const createDbConnection = () => {
   return new Pool({
-    host: signerOptions.hostname,
-    port: signerOptions.port,
-    user: signerOptions.username,
-    database: 'my-db',
-    password: getPassword,
+    host: DATABASE_HOST,
+    port: Number(DATABASE_PORT),
+    user: USER_NAME,
+    database: DATABASE_NAME,
+    password: DATABASE_PASSWORD,
   })
 }

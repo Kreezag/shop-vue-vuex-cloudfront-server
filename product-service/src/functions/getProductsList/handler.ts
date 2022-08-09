@@ -1,30 +1,23 @@
 import 'source-map-support/register';
 import type { ValidatedEventAPIGatewayProxyEvent } from '@libs/apiGateway';
-import { formatJSONResponse } from '@libs/apiGateway';
+import { formatErrorResponse, formatJSONResponse } from '@libs/apiGateway';
 import { middyfy } from '@libs/lambda';
 import { createDbConnection } from "@libs/dbConnection";
 
 export const getProductsList: ValidatedEventAPIGatewayProxyEvent<unknown> = () => {
-  const connection = createDbConnection()
+  const pool = createDbConnection();
 
-  return Promise.all([
-    connection.query('select * from product' ),
-    connection.query('select * from store' ),
-  ]).then(([products, stocks]) => {
-    const result = products.map((product) => {
-      const count = stocks.find((stock) => stock.id === product.id)
-
-      return {
-        ...product,
-        count
-      }
+  return pool.query('SELECT * FROM product INNER JOIN stocks ON stocks.product_id=product.id ORDER BY product.title ')
+    .then(({ rows: products }) => {
+      return formatJSONResponse({
+        products: products.map(({ product_id, ...products }) => products) ,
+      })
     })
-
-    return formatJSONResponse({
-      products: result,
-    });
-  })
+    .catch(() => {
+      return formatErrorResponse('Not found', 400);
+    })
 };
+
 
 
 export const main = middyfy(getProductsList);
