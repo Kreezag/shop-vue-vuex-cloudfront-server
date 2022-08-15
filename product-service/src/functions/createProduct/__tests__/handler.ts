@@ -1,4 +1,7 @@
 import { createProduct } from '../handler';
+import { createDbConnection } from "@libs/dbConnection";
+import { formatErrorResponse, formatJSONResponse } from "@libs/apiGateway";
+import { APIGatewayProxyResult } from "aws-lambda";
 
 const headersMock = {
 	'Access-Control-Allow-Headers': 'Content-Type',
@@ -74,40 +77,19 @@ describe('test for createProduct', () => {
 		});
 	});
 
-	it('pathParameters.id is not actual ', async () => {
-		const data = await createProduct(
-			{
-				body: undefined,
-				headers: undefined,
-				httpMethod: '',
-				isBase64Encoded: false,
-				multiValueHeaders: undefined,
-				multiValueQueryStringParameters: undefined,
-				path: '',
-				queryStringParameters: undefined,
-				requestContext: undefined,
-				resource: '',
-				stageVariables: undefined,
-				pathParameters: { id: 'randomId' },
-			},
-			null,
-			null
-		);
-
-		expect(data).toBeTruthy();
-		expect(data).toEqual({
-			body: JSON.stringify({ message: 'Not Found' }),
-			statusCode: 404,
-			headers: headersMock,
-		});
-	});
-
-	it('pathParameters.id is actual', async () => {
-	  const testId = '23917ffa-64a4-4327-85b0-a56ec95fc0b9';
+	it('body.product is actual', async () => {
+	  const testProduct = {
+      title: "Test product",
+      price: 20,
+      description: "Test product for creation product lambda",
+      count: 7,
+    };
 
 		const data = await createProduct(
 			{
-				body: { title: testId },
+				body: {
+				  product: testProduct,
+        },
 				headers: undefined,
 				httpMethod: '',
 				isBase64Encoded: false,
@@ -122,13 +104,33 @@ describe('test for createProduct', () => {
 			},
 			null,
 			null
-		);
+		) as APIGatewayProxyResult;
 
 		expect(data).toBeTruthy();
-		expect(data).toEqual({
-			body: JSON.stringify({ message: 'Not Found' }),
-			statusCode: 200,
-			headers: headersMock,
-		});
+		expect(data.statusCode).toEqual(200)
+		expect(data.headers).toEqual(headersMock)
+    try {
+      const products = JSON.parse(data.body).products
+
+      expect(products).toBeTruthy();
+      expect(products.title).toEqual(testProduct.title);
+
+      await new Promise(() => {
+        const pool = createDbConnection()
+        const deleteProductQuery = `DELETE FROM product WHERE id = ${products.id}`
+
+        return pool.query(deleteProductQuery)
+          .then(({ rows: products }) => {
+            return formatJSONResponse({
+              products: products.map(({ product_id, ...products }) => products) ,
+            })
+          })
+          .catch(() => {
+            return formatErrorResponse('Not found', 400);
+          })
+      })
+    } catch {
+		  throw new Error('Product do not exist')
+    }
 	});
 });
