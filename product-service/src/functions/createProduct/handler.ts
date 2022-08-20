@@ -12,6 +12,11 @@ type Product = {
   count?: number;
 };
 
+type Stock = {
+  product_id: string;
+  count: string
+}
+
 export const createProduct: ValidatedEventAPIGatewayProxyEvent<typeof schema> = (e) => {
   if (!e?.body) {
     return Promise.resolve()
@@ -30,60 +35,60 @@ export const createProduct: ValidatedEventAPIGatewayProxyEvent<typeof schema> = 
 
   const { title, price = 0, description = '', count = 0 } = product as Product;
 
-  console.log('product', title, price, description)
-
   const pool = createDbConnection();
+
+  let newProduct: Product|null = null;
+  let newStock: Stock|null = null;
 
   return pool.connect()
     .then((client) => {
       return client.query('BEGIN')
-        .then(() => client.query({
-          text: 'INSERT INTO product (title, price, description) VALUES ($1, $2, $3) RETURNING id',
-          values: [title, price, description]
-        })
-          .then(({ rows }) => {
-            if (!rows[0]) {
-              return new Error('Product do not create')
-            }
-
-            return rows[0].id
-          })
-          .then((product_id) => {
-            console.log('product_id', product_id)
+        .then(() => {
             return client.query({
-              text: 'INSERT INTO stocks (product_id, count) VALUES ($1, $2)',
-              values: [product_id, count]
+              text: 'INSERT INTO product (title, price, description) VALUES ($1, $2, $3) RETURNING *',
+              values: [ title, price, description ]
             })
-          })
-          .then((res) => {
-            console.log('COMMIT', res)
-            return client.query('COMMIT')
-          })
-          .catch((res) => {
-            console.log('ROLLBACK', res)
-            return client.query('ROLLBACK')
-          })
-          .catch((err) => {
-            console.error('Catch Error:', err)
+              .then(({ rows }) => {
+                if (!rows[0]) {
+                  throw new Error('Product do not create')
+                }
 
-            return client.query('ROLLBACK').finally(() => {
-              return formatErrorResponse('Product is invalid', 400)
-            })
-          })
-          .then((res) => {
-            console.log('products[0]', res)
-            return formatJSONResponse({ product: { title: 'Hi' } })
-          })
-          .finally(() => {
-              console.info('FINALLY')
-              client.release()
-            })
+                newProduct = rows[0]
+
+                return rows[0].id
+              })
+              .then((product_id) => client.query({
+                  text: 'INSERT INTO stocks (product_id, count) VALUES ($1, $2) RETURNING *',
+                  values: [ product_id, count ]
+                })
+              )
+              .then(({ rows }) => {
+                newStock = rows[0];
+
+                return client.query('COMMIT')
+              })
+              .catch(() => client.query('ROLLBACK'))
+              .then(() => {
+                const product = {
+                  ...newProduct,
+                  stock: newStock.count
+                }
+                return formatJSONResponse({ product })
+              })
+              .catch(() => formatErrorResponse('Not Found', 404))
+              .finally(() => {
+                newProduct = null
+                newStock = null
+                console.info('FINALLY')
+                client.release()
+              });
+          }
         )
-
     })
     .catch(() => {
       return formatErrorResponse('Product is invalid', 400)
     })
+    .finally(() => pool.end())
 };
 
 

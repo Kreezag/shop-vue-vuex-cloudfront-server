@@ -1,6 +1,6 @@
 import { createProduct } from '../handler';
 import { createDbConnection } from "@libs/dbConnection";
-import { formatErrorResponse, formatJSONResponse } from "@libs/apiGateway";
+import { formatErrorResponse } from "@libs/apiGateway";
 import { APIGatewayProxyResult } from "aws-lambda";
 
 const headersMock = {
@@ -109,27 +109,23 @@ describe('test for createProduct', () => {
 		expect(data).toBeTruthy();
 		expect(data.statusCode).toEqual(200)
 		expect(data.headers).toEqual(headersMock)
+
     try {
-      const products = JSON.parse(data.body).products
+      const product = JSON.parse(data.body).product
 
-      expect(products).toBeTruthy();
-      expect(products.title).toEqual(testProduct.title);
+      expect(product).toBeTruthy();
+      expect(product.title).toEqual(testProduct.title);
 
-      await new Promise(() => {
-        const pool = createDbConnection()
-        const deleteProductQuery = `DELETE FROM product WHERE id = ${products.id}`
+      const pool = createDbConnection()
 
-        return pool.query(deleteProductQuery)
-          .then(({ rows: products }) => {
-            return formatJSONResponse({
-              products: products.map(({ product_id, ...products }) => products) ,
-            })
-          })
-          .catch(() => {
-            return formatErrorResponse('Not found', 400);
-          })
+      return pool.query({
+        text: 'DELETE FROM product WHERE id = ${id}',
+        values: [product.id]
       })
-    } catch {
+        .then(() => formatErrorResponse('Product successful deleted', 200))
+        .catch(() => formatErrorResponse('Not found', 400))
+        .finally(() => pool.end())
+    } catch (err) {
 		  throw new Error('Product do not exist')
     }
 	});
