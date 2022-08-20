@@ -7,7 +7,7 @@ import { createDbConnection } from "@libs/dbConnection";
 export const getProductsList: ValidatedEventAPIGatewayProxyEvent<unknown> = () => {
   const pool = createDbConnection();
 
-  return pool.query('SELECT * FROM product INNER JOIN stocks ON stocks.product_id=product.id ORDER BY product.title ')
+  return pool.query('SELECT * FROM product INNER JOIN stocks ON stocks.product_id=product.id ORDER BY product.title')
     .then(({ rows: products }) => {
       return formatJSONResponse({
         products: products.map(({ product_id, ...products }) => products) ,
@@ -16,6 +16,7 @@ export const getProductsList: ValidatedEventAPIGatewayProxyEvent<unknown> = () =
     .catch(() => {
       return formatErrorResponse('Not found', 400);
     })
+    .finally(() => pool.end())
 };
 
 

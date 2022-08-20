@@ -20,7 +20,10 @@ export const getProductById: ValidatedEventAPIGatewayProxyEvent<
 
   const pool = createDbConnection();
 
-  return pool.query({ text: 'SELECT * FROM product INNER JOIN stocks ON product.id=stocks.product_id where id = $1', values: [id] })
+  return pool.query({
+    text: 'SELECT * FROM product INNER JOIN stocks ON product.id=stocks.product_id where id = $1',
+    values: [id],
+  })
     .then(({ rows: products }) => {
       const product = products.map(({ product_id, ...product}) => product)[0];
 
@@ -29,9 +32,11 @@ export const getProductById: ValidatedEventAPIGatewayProxyEvent<
       }
 
       return formatJSONResponse({ product })
-    }).catch(() => {
+    })
+    .catch(() => {
       return formatErrorResponse('Not Found', 404);
     })
+    .finally(() => pool.end())
 };
 
 export const main = middyfy(getProductById);
